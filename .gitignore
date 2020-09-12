@@ -1,0 +1,4 @@
+_py_env/
+__pycache__/
+
+keywords.db

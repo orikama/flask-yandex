@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>FlaskServ</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+    <div class="content">
+        <h1>Adstetica</h1>
+        <form method="POST">
+            <input type="text" name="text" value="{{ text }}">
+            <input type="submit" value="Сгенерировать">
+        </form>
+        <div class="images">
+            {% for uri in img_sources %}
+                <img src="/static/tmp_imgs/{{ uri }}">
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>
