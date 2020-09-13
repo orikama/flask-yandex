@@ -1,7 +1,7 @@
 import os
 from urllib.parse import urlparse
 
-import requests
+import httpx
 import json
 from bs4 import BeautifulSoup
 
@@ -34,20 +34,21 @@ class FuckinCaptchaError(Exception):
 class YandexImages():
 
     def __init__(self, width, height):
+        self.http_client = httpx.AsyncClient(timeout=5.0)
         self.query_params = self.__init_query_params(width, height)
 
-    def get_images_by_keyword(self, keyword, img_count):
+    async def get_images_by_keyword(self, keyword, img_count):
         self.query_params["text"] = keyword
 
-        img_uris = self.__get_image_uris_from_page()
+        img_uris = await self.__get_image_uris_from_page()
         print(f'img_uris: {len(img_uris)}')
-        image_infos = self.__get_images_from_uris(img_uris, img_count)
+        image_infos = await self.__get_images_from_uris(img_uris, img_count)
         print(f'image_infos: {len(image_infos)}')
 
         return image_infos
 
-    def __get_image_uris_from_page(self):
-        page_response = requests.get(BASE_URI, self.query_params)
+    async def __get_image_uris_from_page(self):
+        page_response = await self.http_client.get(BASE_URI, params=self.query_params)
         soup = self.__get_soup_or_get_fucked(page_response)
 
         tag_sepr_item = soup.find_all("div", class_="serp-item")
@@ -60,7 +61,7 @@ class YandexImages():
 
         return img_hrefs
 
-    def __get_images_from_uris(self, img_uris, img_count):
+    async def __get_images_from_uris(self, img_uris, img_count):
         image_infos = []
 
         for img_uri in img_uris:
@@ -72,8 +73,8 @@ class YandexImages():
                 continue
 
             try:
-                img = requests.get(img_uri, headers=REQUEST_HEADER, timeout=5.0).content
-            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
+                img = (await self.http_client.get(img_uri, headers=REQUEST_HEADER)).content
+            except (httpx._exceptions.ReadTimeout, httpx._exceptions.ConnectError):
                 continue
             if self.__validate_image_format(img, img_format) == False:
                 continue
@@ -115,7 +116,6 @@ class YandexImages():
         soup = BeautifulSoup(page_response.text, "lxml")
 
         if soup.find("div", class_="captcha__image"):
-            print("GET FUCKED")
             raise FuckinCaptchaError(page_response.content)
 
         return soup

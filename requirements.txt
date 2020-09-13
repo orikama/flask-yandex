@@ -1,5 +1,5 @@
-flask
-requests
+quart #flask
+httpx #requests
 beautifulsoup4
 lxml
 Pillow

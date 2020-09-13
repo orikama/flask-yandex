@@ -27,7 +27,7 @@ class MyApp():
         # os.rmdir(self.temp_img_dir)
         shutil.rmtree(self.temp_img_dir, ignore_errors=True)
 
-    def get_images(self, text, img_count):
+    async def get_images(self, text, img_count):
         keywords = self.keywords_ext.get_keywords(text)
         keywords_count = len(keywords)
 
@@ -52,7 +52,7 @@ class MyApp():
             count = images_for_keyword + int(reminder > 0)
             reminder -= 1
 
-            img_infos = self.ya_images.get_images_by_keyword(keyword, count)
+            img_infos = await self.ya_images.get_images_by_keyword(keyword, count)
             for img_info in img_infos:
                 img_info["image"] = self.text_on_image.draw_text(text, img_info["image"])
             images.extend(img_infos)
