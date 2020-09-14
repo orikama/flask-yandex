@@ -16,7 +16,6 @@ DB_NAME = 'keywords.db'
 class KeywordsDB():
 
     def __init__(self):
-        # NOTE: Very safe solution
         self.db_connection = sqlite3.connect(DB_NAME, check_same_thread=False)
         self.db_cursor = self.db_connection.cursor()
         self.__create_tables()
@@ -32,7 +31,6 @@ class KeywordsDB():
 
         self.db_cursor.execute('SELECT text_id FROM texts WHERE txt=?', (text,))
         text_id = self.db_cursor.fetchone()[0]
-        print(f'db.add() text_id: {text_id}')
 
         for keyword in keywords:
             self.db_cursor.execute(
@@ -42,13 +40,13 @@ class KeywordsDB():
             )
         self.db_connection.commit()
 
-        self.db_cursor.execute(
-            '''SELECT t.txt, k.keyword FROM texts_keywords as tk
-            JOIN texts as t ON tk.text_id=t.text_id
-            JOIN keywords as k ON tk.keyword_id=k.keyword_id'''
-        )
-        for row in self.db_cursor.fetchall():
-            print(row)
+        # self.db_cursor.execute(
+        #     '''SELECT t.txt, k.keyword FROM texts_keywords as tk
+        #     JOIN texts as t ON tk.text_id=t.text_id
+        #     JOIN keywords as k ON tk.keyword_id=k.keyword_id'''
+        # )
+        # for row in self.db_cursor.fetchall():
+        #     print(row)
 
     def __create_tables(self):
         self.db_cursor.execute(

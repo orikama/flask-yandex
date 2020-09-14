@@ -45,8 +45,6 @@ class TextOnImage():
 
         avg = ((r // count), (g // count), (b // count))
         result = ((avg[0] + 127) % 255,(avg[1] + 127) % 255,(avg[2] + 127) % 255)
-        print(f"avg: {avg}")
-        print(f"inv: {result}")
 
         return result
 

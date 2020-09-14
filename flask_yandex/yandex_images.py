@@ -40,9 +40,7 @@ class YandexImages():
         self.query_params["text"] = keyword
 
         img_uris = self.__get_image_uris_from_page()
-        print(f'img_uris: {len(img_uris)}')
         image_infos = self.__get_images_from_uris(img_uris, img_count)
-        print(f'image_infos: {len(image_infos)}')
 
         return image_infos
 
@@ -78,8 +76,6 @@ class YandexImages():
             if self.__validate_image_format(img, img_format) == False:
                 continue
 
-            print(f"URI {img_uri}")
-
             img_info = {
                 "format": img_format,
                 "image": img
@@ -94,10 +90,6 @@ class YandexImages():
         path = urlparse(img_uri).path
         ext = os.path.splitext(path)[1]
 
-        print(f'__get_img_format() img_uri: {img_uri}')
-        print(f'__get_img_format() path: {path}')
-        print(f"__get_img_format: {ext}")
-
         if ext in IMG_FORMAT_TO_MAGIC_BYTES:
             return ext
 
@@ -105,7 +97,6 @@ class YandexImages():
 
     @staticmethod
     def __validate_image_format(image, img_format):
-        print(f"img_format: {img_format} lower: {img_format.lower()}")
         magic_bytes = IMG_FORMAT_TO_MAGIC_BYTES[img_format.lower()]
 
         return image[:len(magic_bytes)] == magic_bytes
@@ -115,7 +106,6 @@ class YandexImages():
         soup = BeautifulSoup(page_response.text, "lxml")
 
         if soup.find("div", class_="captcha__image"):
-            print("GET FUCKED")
             raise FuckinCaptchaError(page_response.content)
 
         return soup
